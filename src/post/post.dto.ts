@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
 class CreatePostDto {
   @IsString()
@@ -9,6 +9,10 @@ class CreatePostDto {
 
   @IsString()
   public title: string;
+
+  @IsOptional()
+  @IsString()
+  public tag: string;
 }
 
 export default CreatePostDto;
