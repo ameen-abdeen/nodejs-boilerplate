@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
@@ -8,7 +9,7 @@ function validationMiddleware<T>(
   type: any,
   skipMissingProperties = false,
 ): express.RequestHandler {
-  return (req, res, next): any => {
+  return (req, res, next) => {
     validate(plainToClass(type, req.body), { skipMissingProperties }).then(
       (errors: ValidationError[]) => {
         if (errors.length > 0) {
