@@ -1,0 +1,27 @@
+{
+    "editor.formatOnSave": true,
+    "tslint.configFile": "./tslint.json",
+    "cSpell.words": [
+        "Buildable",
+        "JSONB",
+        "KEYCLOAK",
+        "Orgs",
+        "POSTGRES",
+        "SKUS",
+        "Struct",
+        "bigint",
+        "camelcase",
+        "lsadmin",
+        "middlewares",
+        "openid",
+        "organizationid",
+        "postges",
+        "printf",
+        "superstruct",
+        "typeorm",
+        "userinfo"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+}
