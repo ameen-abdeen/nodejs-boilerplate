@@ -3,6 +3,7 @@
 import 'dotenv/config';
 import 'reflect-metadata';
 import { createConnection } from 'typeorm';
+import ExplorerController from './explorer/explorer.controller';
 import App from './app';
 import * as config from './ormconfig';
 import PostController from './post/post.controller';
@@ -19,6 +20,6 @@ validateEnv();
     console.log('Error while connecting to the database', error);
     return error;
   }
-  const app = new App([new PostController()]);
+  const app = new App([new ExplorerController(), new PostController()]);
   app.listen();
 })();

@@ -1,0 +1,129 @@
+# Multi Stage Pipelines
+# Project : Forecast-API
+# Author : Dilshan Wijesooriya
+
+# Pipeline Trigger
+trigger:
+  branches:
+    include:
+      - "*"
+
+variables:
+  # Define variables in Library section under pipelines
+  #- group: forecast-api-variables
+
+  # name of the service connection
+  - name: dockerRegistryServiceConnection
+    value: "linearsquared"
+
+  # container registry endpoint
+  - name: acrEndpoint
+    value: "linearsquared.azurecr.io"
+
+  - name: tag
+    # value: '$(Build.BuildId)'
+    value: latest
+
+# Build Stage
+stages:
+  - stage: Build
+    displayName: Build stage
+
+    # Build Stage Jobs
+    jobs:
+      - job: Build
+        displayName: Build job
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "10.x"
+            displayName: "install node.js"
+
+          - script: |
+              npm install
+              npm run build
+            displayName: "npm install and build"
+
+          - script: |
+              npm run lint
+            displayName: "run lint"
+
+          - script: |
+              npm run test
+            displayName: "npm run test"
+
+          - script: |
+              npm run test-coverage
+            displayName: "npm test-coverage"
+
+          - task: SonarQubePrepare@4
+            inputs:
+              SonarQube: "Sonar_Connection"
+              scannerMode: "CLI"
+              configMode: "file"
+              extraProperties: |
+                sonar.branch=$(Build.SourceBranch)
+
+          - task: SonarQubeAnalyze@4
+
+          # Build and push an image
+          - task: Docker@2
+            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+            displayName: Build and push an image to container registry
+            inputs:
+              command: buildAndPush
+              repository: forecast-api
+              dockerfile: "**/Dockerfile"
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: $(tag)
+
+          # Publishing Artifacts (Manifest Files/Deployment Files)
+          - task: PublishPipelineArtifact@0
+            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+            displayName: Publish Artifacts
+            inputs:
+              artifactName: "manifests"
+              targetPath: "manifests"
+
+  # Deploy Stage
+  - stage: DeployDev
+    displayName: Deploy to dev stage
+    dependsOn: Build
+
+    variables:
+      # Kubernetes Namespace to deploy to. This variable is scoped to the DeployDev stage.
+      - name: k8sNamespace
+        value: "dev"
+
+    jobs:
+      # Deploy Stage Agent Job
+      - deployment: DeployDev
+        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+        displayName: Deploy to dev job
+        pool:
+          vmImage: ubuntu-latest
+
+        environment: "eps-dev.dev" # name of the environment to target [env name.namespace]. This will pull in the Kubernetes service connection automatically
+
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Download Artifacts (Manifest Files/Deployment Files)
+                - task: DownloadPipelineArtifact@1
+                  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+                  inputs:
+                    artifactName: "manifests"
+                    downloadPath: "$(System.ArtifactsDirectory)/manifests"
+
+                # Deploying to the cluster
+                - task: KubernetesManifest@0
+                  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+                  displayName: Deploy to Kubernetes cluster
+                  inputs:
+                    action: deploy
+                    namespace: $(k8sNamespace)
+                    manifests: $(System.ArtifactsDirectory)/manifests/*
+                    containers: "$(acrEndpoint)/admin-frontend:$(tag)"

@@ -1,0 +1,53 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger: none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+  ## overriding build number to release number
+  - task: PowerShell@2
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+    inputs:
+      targetType: "inline"
+      script: |
+        echo "Release Version : "$(releaseVersion)
+        Write-Host "##vso[build.updatebuildnumber]$(releaseVersion)"
+
+    displayName: "Updating build number"
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "10.x"
+    displayName: "install node.js"
+
+  - script: |
+      npm install
+      npm run build
+    displayName: "npm install and build"
+
+  - script: |
+      npm run lint
+    displayName: "run lint"
+
+  - script: |
+      npm run test
+    displayName: "npm run test"
+
+  - script: |
+      npm run test-coverage
+    displayName: "npm test-coverage"
+
+  - task: docker@2
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+    inputs:
+      containerRegistry: "linearsquared"
+      repository: "forecast-api"
+      command: "buildAndPush"
+      Dockerfile: "**/Dockerfile"
+      tags: $(releaseVersion)
+    displayName: "Release docker container and tagging latest docker image"

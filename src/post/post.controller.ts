@@ -1,4 +1,5 @@
 import * as express from 'express';
+import { API, V1 } from '../utils/constants';
 import Controller from '../interfaces/controller.interface';
 import validationMiddleware from '../middleware/validation.middleware';
 import CreatePostDto from './post.dto';
@@ -6,7 +7,7 @@ import PostService from './post.service';
 import Post from './post.entity';
 
 class PostController implements Controller {
-  public path = '/post';
+  public path = `/${API}/${V1}/post`;
 
   public router = express.Router();
 

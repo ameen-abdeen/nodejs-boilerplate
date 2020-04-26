@@ -7,6 +7,7 @@ function validateEnv(): void {
     POSTGRES_DB: str(),
     SERVER_PORT: port(),
     VERSION: str(),
+    LOG_LEVEL: str(),
   });
 }
 
