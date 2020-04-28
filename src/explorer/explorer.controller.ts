@@ -22,14 +22,13 @@ class ExplorerController implements Controller {
           type: 'apiKey',
           name: 'Authorization',
         },
-        orgId: {
-          type: 'apiKey',
-          name: 'organizationId',
-        },
       },
-      security: [{ auth: [], orgId: [] }],
+      security: [{ auth: [] }],
     },
-    apis: [`${__dirname}/*.ts`, `${__dirname}/*.js`],
+    apis: [
+      `${__dirname}/../**/*.controller.ts`,
+      `${__dirname}/../**/*.controller.js`,
+    ],
   };
 
   swaggerSpec = swaggerJSDoc(this.options);

@@ -1,4 +1,6 @@
 import * as express from 'express';
+import authMiddleware from '../middleware/auth.middleware';
+import logger from '../utils/logger';
 import { API, V1 } from '../utils/constants';
 import Controller from '../interfaces/controller.interface';
 import validationMiddleware from '../middleware/validation.middleware';
@@ -18,14 +20,117 @@ class PostController implements Controller {
   }
 
   private initializeRoutes(): void {
+    /**
+     * @swagger
+     * /post:
+     *   get:
+     *      tags:
+     *        - Post
+     *      description: Get all posts
+     *      responses:
+     *        200:
+     *          description: Array of posts
+     */
     this.router.get(this.path, this.getAllPosts);
+
+    /**
+     * @swagger
+     * /post/{id}:
+     *   get:
+     *      tags:
+     *        - Post
+     *      description: Get post by id
+     *      parameters:
+     *        - in : path
+     *          name: id
+     *          type: integer
+     *          required: true
+     *      responses:
+     *         200:
+     *           description: returns an post object
+     */
     this.router.get(`${this.path}/:id`, this.getPostById);
+
+    /**
+     * @swagger
+     * /post/{id}:
+     *   patch:
+     *      tags:
+     *        - Post
+     *      description: Update elements of a certain post
+     *      parameters:
+     *        - in : path
+     *          name: id
+     *          type: integer
+     *          required: true
+     *        - in: body
+     *          name: PostObject
+     *          description: Post object to be saved.
+     *          schema:
+     *              type: object
+     *              properties:
+     *                  author:
+     *                      type: string
+     *                  title:
+     *                      type: string
+     *                  content:
+     *                      type: string
+     *      responses:
+     *         200:
+     *           description: returns an post object
+     */
     this.router.patch(
       `${this.path}/:id`,
       validationMiddleware(CreatePostDto, true),
       this.modifyPost,
     );
+
+    /**
+     * @swagger
+     * /post/{id}:
+     *   delete:
+     *      tags:
+     *        - Post
+     *      description: Delete a post by id
+     *      parameters:
+     *        - in : path
+     *          name: id
+     *          type: integer
+     *          required: true
+     *      responses:
+     *         200:
+     *           description: If success will send 200 status code
+     */
     this.router.delete(`${this.path}/:id`, this.deletePost);
+
+    /**
+     * @swagger
+     * /post:
+     *   post:
+     *      tags:
+     *        - Post
+     *      description: Create a new Post
+     *      parameters:
+     *        - in: body
+     *          name: PostObject
+     *          description: Post object to be saved.
+     *          schema:
+     *              type: object
+     *              required:
+     *                  - author
+     *                  - title
+     *                  - content
+     *              properties:
+     *                  author:
+     *                      type: string
+     *                  title:
+     *                      type: string
+     *                  content:
+     *                      type: string
+     *      responses:
+     *         200:
+     *           description: Returns the created object
+     */
     this.router.post(
       this.path,
       validationMiddleware(CreatePostDto),
@@ -39,6 +144,7 @@ class PostController implements Controller {
     next: express.NextFunction,
   ): Promise<void> => {
     try {
+      logger.info(`Get All Post Invocation`);
       const posts = await this.postService.getAllPosts();
       response.send(posts);
     } catch (error) {
@@ -51,6 +157,8 @@ class PostController implements Controller {
     response: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
+    logger.info(`Get Post By Id Invocation`);
+    logger.debug(`Post id passed - ${request.params}`);
     const { id } = request.params;
     try {
       const post = await this.postService.getPostById(id);
@@ -65,6 +173,11 @@ class PostController implements Controller {
     response: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
+    logger.info(`Modify Post Invocation`);
+    logger.debug(`Post id passed - ${request.params}`);
+    logger.debug(
+      `Post elements to be updated - ${JSON.stringify(request.body)}`,
+    );
     const { id } = request.params;
     const postData: Post = request.body;
     try {
@@ -80,6 +193,8 @@ class PostController implements Controller {
     response: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
+    logger.info(`Create Post Invocation`);
+    logger.debug(`Post to be created - ${JSON.stringify(request.body)}`);
     const postData: CreatePostDto = request.body;
     try {
       const post = await this.postService.createPost(postData);
@@ -94,6 +209,8 @@ class PostController implements Controller {
     response: express.Response,
     next: express.NextFunction,
   ): Promise<void> => {
+    logger.info(`Delete Post Invocation`);
+    logger.debug(`Post to be deleted - ${request.params}`);
     const { id } = request.params;
     try {
       await this.postService.deletePost(id);

@@ -2,12 +2,13 @@
   "name": "Boilerplate",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.ts",
   "scripts": {
     "dev": "ts-node ./src/server.ts",
     "build": "tsc && npm run lint",
     "clean": "rimraf ./dist",
     "lint": "eslint src/**/*.ts --fix",
+    "lint-no-fix": "eslint src/**/*.ts",
     "typeorm:cli": "ts-node ./node_modules/typeorm/cli -f ./src/ormconfig.ts",
     "tsc": "tsc",
     "test": "jest"
@@ -28,6 +29,7 @@
     "envalid": "^5.0.0",
     "express": "^4.17.1",
     "lodash": "^4.17.15",
+    "moment": "^2.24.0",
     "morgan": "^1.10.0",
     "pg": "^8.0.3",
     "prettier": "^2.0.5",
@@ -58,10 +60,16 @@
     "eslint-plugin-jsdoc": "^24.0.0",
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-security": "^1.4.0",
+    "husky": "^4.2.5",
     "jest": "^24.8.0",
     "rimraf": "^2.6.3",
     "supertest": "^4.0.2",
     "ts-jest": "^24.0.2",
     "typescript-eslint-parser": "^22.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-no-fix && npm test"
+    }
   }
 }

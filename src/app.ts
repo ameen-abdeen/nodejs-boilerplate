@@ -24,6 +24,10 @@ class App {
     });
   }
 
+  public getServer(): express.Application {
+    return this.app;
+  }
+
   private initializeMiddlewares(): void {
     this.app.use(bodyParser.json());
 
