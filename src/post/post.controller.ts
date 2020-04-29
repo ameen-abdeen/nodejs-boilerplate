@@ -1,12 +1,12 @@
 import * as express from 'express';
-import authMiddleware from '../middleware/auth.middleware';
 import logger from '../utils/logger';
-import { API, V1 } from '../utils/constants';
+import { API, V1, HTTP_REPONSE_CODES, MESSAGES } from '../utils/constants';
 import Controller from '../interfaces/controller.interface';
 import validationMiddleware from '../middleware/validation.middleware';
 import CreatePostDto from './post.dto';
 import PostService from './post.service';
 import Post from './post.entity';
+import authMiddleware from '../middleware/auth.middleware';
 
 class PostController implements Controller {
   public path = `/${API}/${V1}/post`;
@@ -51,91 +51,95 @@ class PostController implements Controller {
      */
     this.router.get(`${this.path}/:id`, this.getPostById);
 
-    /**
-     * @swagger
-     * /post/{id}:
-     *   patch:
-     *      tags:
-     *        - Post
-     *      description: Update elements of a certain post
-     *      parameters:
-     *        - in : path
-     *          name: id
-     *          type: integer
-     *          required: true
-     *        - in: body
-     *          name: PostObject
-     *          description: Post object to be saved.
-     *          schema:
-     *              type: object
-     *              properties:
-     *                  author:
-     *                      type: string
-     *                  title:
-     *                      type: string
-     *                  content:
-     *                      type: string
-     *      responses:
-     *         200:
-     *           description: returns an post object
-     */
-    this.router.patch(
-      `${this.path}/:id`,
-      validationMiddleware(CreatePostDto, true),
-      this.modifyPost,
-    );
+    this.router
+      .all(`${this.path}/*`, authMiddleware)
 
-    /**
-     * @swagger
-     * /post/{id}:
-     *   delete:
-     *      tags:
-     *        - Post
-     *      description: Delete a post by id
-     *      parameters:
-     *        - in : path
-     *          name: id
-     *          type: integer
-     *          required: true
-     *      responses:
-     *         200:
-     *           description: If success will send 200 status code
-     */
-    this.router.delete(`${this.path}/:id`, this.deletePost);
+      /**
+       * @swagger
+       * /post/{id}:
+       *   patch:
+       *      tags:
+       *        - Post
+       *      description: Update elements of a certain post
+       *      parameters:
+       *        - in : path
+       *          name: id
+       *          type: integer
+       *          required: true
+       *        - in: body
+       *          name: PostObject
+       *          description: Post object to be saved.
+       *          schema:
+       *              type: object
+       *              properties:
+       *                  author:
+       *                      type: string
+       *                  title:
+       *                      type: string
+       *                  content:
+       *                      type: string
+       *      responses:
+       *         200:
+       *           description: returns an post object
+       */
+      .patch(
+        `${this.path}/:id`,
+        validationMiddleware(CreatePostDto, true),
+        this.modifyPost,
+      )
 
-    /**
-     * @swagger
-     * /post:
-     *   post:
-     *      tags:
-     *        - Post
-     *      description: Create a new Post
-     *      parameters:
-     *        - in: body
-     *          name: PostObject
-     *          description: Post object to be saved.
-     *          schema:
-     *              type: object
-     *              required:
-     *                  - author
-     *                  - title
-     *                  - content
-     *              properties:
-     *                  author:
-     *                      type: string
-     *                  title:
-     *                      type: string
-     *                  content:
-     *                      type: string
-     *      responses:
-     *         200:
-     *           description: Returns the created object
-     */
-    this.router.post(
-      this.path,
-      validationMiddleware(CreatePostDto),
-      this.createPost,
-    );
+      /**
+       * @swagger
+       * /post/{id}:
+       *   delete:
+       *      tags:
+       *        - Post
+       *      description: Delete a post by id
+       *      parameters:
+       *        - in : path
+       *          name: id
+       *          type: integer
+       *          required: true
+       *      responses:
+       *         200:
+       *           description: If success will send 200 status code
+       */
+      .delete(`${this.path}/:id`, this.deletePost)
+
+      /**
+       * @swagger
+       * /post:
+       *   post:
+       *      tags:
+       *        - Post
+       *      description: Create a new Post
+       *      parameters:
+       *        - in: body
+       *          name: PostObject
+       *          description: Post object to be saved.
+       *          schema:
+       *              type: object
+       *              required:
+       *                  - author
+       *                  - title
+       *                  - content
+       *              properties:
+       *                  author:
+       *                      type: string
+       *                  title:
+       *                      type: string
+       *                  content:
+       *                      type: string
+       *      responses:
+       *         201:
+       *           description: Returns the created object
+       */
+      .post(
+        this.path,
+        authMiddleware,
+        validationMiddleware(CreatePostDto),
+        this.createPost,
+      );
   }
 
   private getAllPosts = async (
@@ -198,7 +202,7 @@ class PostController implements Controller {
     const postData: CreatePostDto = request.body;
     try {
       const post = await this.postService.createPost(postData);
-      response.send(post);
+      response.status(HTTP_REPONSE_CODES.CREATED).send(post);
     } catch (error) {
       next(error);
     }
@@ -214,7 +218,7 @@ class PostController implements Controller {
     const { id } = request.params;
     try {
       await this.postService.deletePost(id);
-      response.send(200);
+      response.status(HTTP_REPONSE_CODES.OK).send(MESSAGES.POST_DELETE_SUCCESS);
     } catch (error) {
       next(error);
     }

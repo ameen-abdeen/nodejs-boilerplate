@@ -3,6 +3,7 @@
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import * as express from 'express';
+import { HTTP_REPONSE_CODES } from '../utils/constants';
 import HttpException from '../exceptions/HttpException';
 
 function validationMiddleware<T>(
@@ -16,7 +17,7 @@ function validationMiddleware<T>(
           const message = errors
             .map((error: ValidationError) => Object.values(error.constraints))
             .join(', ');
-          next(new HttpException(400, message));
+          next(new HttpException(HTTP_REPONSE_CODES.BAD_REQUEST, message));
         } else {
           next();
         }

@@ -8,6 +8,8 @@ function validateEnv(): void {
     SERVER_PORT: port(),
     VERSION: str(),
     LOG_LEVEL: str(),
+    KEYCLOAK_API_URL: str(),
+    KEYCLOAK_REALM: str(),
   });
 }
 

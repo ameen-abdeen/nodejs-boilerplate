@@ -12,11 +12,11 @@ const logFormat = printf(
 );
 
 const transport = new DailyRotateFile({
-  filename: '%DATE%.log',
-  dirname: 'logs',
+  filename: `%DATE%.log`,
+  dirname: `${__dirname}/../logs`,
   maxSize: '20m',
-  maxFiles: '14d',
-  level: process.env.LOG_LEVEL,
+  maxFiles: '1d',
+  level: 'debug',
 });
 
 export default winston.createLogger({
@@ -24,6 +24,5 @@ export default winston.createLogger({
   transports: [
     transport,
     new winston.transports.Console({ level: process.env.LOG_LEVEL }),
-    new winston.transports.File({ filename: 'combined.log' }),
   ],
 });

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Request, Response, NextFunction } from 'express';
+import { HTTP_REPONSE_CODES } from '../utils/constants';
 import HttpException from '../exceptions/HttpException';
+import logger from '../utils/logger';
 
 function errorMiddleware(
   error: HttpException,
@@ -9,8 +11,9 @@ function errorMiddleware(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction,
 ) {
-  const status = error.status || 500;
+  const status = error.status || HTTP_REPONSE_CODES.INTERNAL_SERVER_ERROR;
   const message = error.message || 'Something went wrong';
+  logger.error(`${status} ${message}`);
   response.status(status).send({
     status,
     message,

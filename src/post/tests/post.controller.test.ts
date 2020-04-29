@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as typeorm from 'typeorm';
 import supertest from 'supertest';
-import PostService from '../post.service';
+import { HTTP_REPONSE_CODES } from '../../utils/constants';
 import { PostDummy } from '../../utils/dummies';
 import App from '../../app';
 import PostController from '../post.controller';
@@ -18,7 +18,7 @@ describe('The PostController', () => {
   describe('GET /post', () => {
     // eslint-disable-next-line jest/expect-expect
     it('[INTEGRATION] should return an array of posts', async () => {
-      await request.get(`${postController.path}`).expect(200);
+      await request.get(`${postController.path}`).expect(HTTP_REPONSE_CODES.OK);
     });
 
     it('should return an array of posts', async () => {
@@ -26,7 +26,7 @@ describe('The PostController', () => {
         .spyOn(postController.postService, 'getAllPosts')
         .mockResolvedValue([PostDummy]);
 
-      await request.get(`${postController.path}`).expect(200);
+      await request.get(`${postController.path}`).expect(HTTP_REPONSE_CODES.OK);
       expect(postController.postService.getAllPosts).toBeCalled();
     });
   });
