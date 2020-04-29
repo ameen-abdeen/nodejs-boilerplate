@@ -3,6 +3,7 @@
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import * as express from 'express';
+import logger from '../utils/logger';
 import { HTTP_REPONSE_CODES } from '../utils/constants';
 import HttpException from '../exceptions/HttpException';
 
@@ -11,6 +12,7 @@ function validationMiddleware<T>(
   skipMissingProperties = false,
 ): express.RequestHandler {
   return (req, res, next) => {
+    logger.info(`Request validation for ${type}`);
     validate(plainToClass(type, req.body), { skipMissingProperties }).then(
       (errors: ValidationError[]) => {
         if (errors.length > 0) {

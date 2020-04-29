@@ -13,7 +13,15 @@ function errorMiddleware(
 ) {
   const status = error.status || HTTP_REPONSE_CODES.INTERNAL_SERVER_ERROR;
   const message = error.message || 'Something went wrong';
-  logger.error(`${status} ${message}`);
+  logger.error({
+    path: request.path,
+    status,
+    message,
+    headers: request.headers,
+    params: request.params,
+    body: request.body,
+  });
+
   response.status(status).send({
     status,
     message,

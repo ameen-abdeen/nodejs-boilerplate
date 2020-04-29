@@ -1,8 +1,6 @@
 import * as bodyParser from 'body-parser';
 import express from 'express';
-import morgan from 'morgan';
-import path from 'path';
-import rfs from 'rotating-file-stream';
+import logger from './utils/logger';
 import Controller from './interfaces/controller.interface';
 import errorMiddleware from './middleware/error.middleware';
 
@@ -31,24 +29,10 @@ class App {
   private initializeMiddlewares(): void {
     this.app.use(bodyParser.json());
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    morgan.token('body', (req, res) => {
-      return JSON.stringify(req.body);
+    this.app.use((req, res, next) => {
+      logger.info(`${res.statusCode} ${req.method} ${req.path}`);
+      next();
     });
-
-    // create a rotating write stream
-    const accessLogStream = rfs('access.log', {
-      interval: '1d', // rotate daily
-      path: path.join(__dirname, 'logs'),
-    });
-    this.app.use(
-      morgan(
-        ':date[web] :method :url :status :response-time [request - :body]',
-        {
-          stream: accessLogStream,
-        },
-      ),
-    );
   }
 
   private initializeErrorHandling(): void {
