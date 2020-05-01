@@ -5,12 +5,11 @@
   "main": "server.ts",
   "scripts": {
     "dev": "ts-node ./src/server.ts",
-    "build": "tsc && npm run lint",
+    "build": "rimraf ./dist && tsc -p tsconfig.build.json",
     "clean": "rimraf ./dist",
     "lint": "eslint src/**/*.ts --fix",
     "lint-no-fix": "eslint src/**/*.ts",
     "typeorm:cli": "ts-node ./node_modules/typeorm/cli -f ./src/ormconfig.ts",
-    "tsc": "tsc",
     "test": "jest",
     "test-coverage": "jest --coverage"
   },

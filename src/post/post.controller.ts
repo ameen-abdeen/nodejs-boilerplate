@@ -165,7 +165,7 @@ class PostController implements Controller {
     logger.debug(`Post id passed - ${request.params}`);
     const { id } = request.params;
     try {
-      const post = await this.postService.getPostById(id);
+      const post = await this.postService.getPostById(Number(id));
       response.send(post);
     } catch (error) {
       next(error);
@@ -185,7 +185,7 @@ class PostController implements Controller {
     const { id } = request.params;
     const postData: Post = request.body;
     try {
-      const post = await this.postService.modifyPost(id, postData);
+      const post = await this.postService.modifyPost(Number(id), postData);
       response.send(post);
     } catch (error) {
       next(error);
@@ -217,7 +217,7 @@ class PostController implements Controller {
     logger.debug(`Post to be deleted - ${request.params}`);
     const { id } = request.params;
     try {
-      await this.postService.deletePost(id);
+      await this.postService.deletePost(Number(id));
       response.status(HTTP_REPONSE_CODES.OK).send(MESSAGES.POST_DELETE_SUCCESS);
     } catch (error) {
       next(error);

@@ -4,15 +4,25 @@ services:
     container_name: postgres
     image: postgres:latest
     ports:
-    - "5432:5432"
+      - "5432:5432"
     volumes:
-    - /data/postgres:/data/postgres
+      - postgres-data:/data/postgres
     env_file:
-    - docker.env
-    networks:
-    - postgres
+      - docker.env
     restart: unless-stopped
- 
-networks:
-  postgres:
-    driver: bridge
+
+  post:
+    image: post-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - docker.env
+
+volumes:
+  postgres-data:

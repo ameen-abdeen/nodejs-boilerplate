@@ -5,7 +5,7 @@ FROM node:12-slim
 WORKDIR /usr/src/app
 
 # Copy package.json and other jsons to working directory
-COPY ["package.json","tsconfig.json","./"]
+COPY ["package.json","tsconfig.build.json","tsconfig.json","./"]
 
 # Install all node modules
 RUN npm install
@@ -14,7 +14,7 @@ RUN npm install
 COPY src src
 
 # Exposing port 4000, should be needed when creating the CI/CD Pipeline
-EXPOSE 4000
+EXPOSE 5000
 
 RUN npm run build
 

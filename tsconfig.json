@@ -13,7 +13,5 @@
     "esModuleInterop": true,
     "module": "commonjs",
     "moduleResolution": "node"
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", ".vscode", "dist", "logs", "**/*spec.ts"]
+  }
 }
