@@ -2,11 +2,11 @@ import * as express from 'express';
 import { logger } from '../utils/logger';
 import { API, V1, HTTP_REPONSE_CODES, MESSAGES } from '../utils/constants';
 import Controller from '../interfaces/controller.interface';
-import validationMiddleware from '../middleware/validation.middleware';
+import validationMiddleware from '../middleware/validationMiddleware';
 import CreatePostDto from './post.dto';
 import PostService from './post.service';
 import Post from './post.entity';
-import authMiddleware from '../middleware/auth.middleware';
+import authMiddleware from '../middleware/authMiddleware';
 
 class PostController implements Controller {
   public path = `/${API}/${V1}/post`;

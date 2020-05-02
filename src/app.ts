@@ -2,7 +2,7 @@ import * as bodyParser from 'body-parser';
 import express from 'express';
 import { logger } from './utils/logger';
 import Controller from './interfaces/controller.interface';
-import errorMiddleware from './middleware/error.middleware';
+import errorMiddleware from './middleware/errorMiddleware';
 
 class App {
   private app: express.Application;
