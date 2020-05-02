@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { HTTP_REPONSE_CODES } from '../utils/constants';
 import HttpException from '../exceptions/HttpException';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 
 function errorMiddleware(
   error: HttpException,

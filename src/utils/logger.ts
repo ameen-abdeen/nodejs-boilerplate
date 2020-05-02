@@ -19,10 +19,12 @@ const transport = new DailyRotateFile({
   level: 'debug',
 });
 
-export default winston.createLogger({
+export const logger = winston.createLogger({
   format: combine(winston.format.timestamp(), logFormat),
   transports: [
     transport,
     new winston.transports.Console({ level: process.env.LOG_LEVEL }),
   ],
 });
+
+export default logger;

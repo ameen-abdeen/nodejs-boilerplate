@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 import PostNotFoundException from '../exceptions/PostNotFoundException';
 import Post from './post.entity';
 import CreatePostDto from './post.dto';

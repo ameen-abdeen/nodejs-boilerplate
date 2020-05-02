@@ -1,5 +1,5 @@
 import * as express from 'express';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 import { API, V1, HTTP_REPONSE_CODES, MESSAGES } from '../utils/constants';
 import Controller from '../interfaces/controller.interface';
 import validationMiddleware from '../middleware/validation.middleware';

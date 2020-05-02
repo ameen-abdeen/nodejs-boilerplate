@@ -3,7 +3,7 @@
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import * as express from 'express';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 import { HTTP_REPONSE_CODES } from '../utils/constants';
 import HttpException from '../exceptions/HttpException';
 
