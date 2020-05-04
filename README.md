@@ -21,57 +21,83 @@
 
 ## Run
 
+```bash
 npm run dev
+```
 
 ## Build
 
+```bash
 npm run build
+```
 
 ## Clean (remove previous build)
 
+```bash
 npm run clean
+```
 
 ## Lint
 
+```bash
 npm run lint
+```
 
 ## Test
 
+```bash
 npm run test
+```
 
 ## Collect Test Coverage
 
+```bash
 npm run test-coverage
+```
 
 ## Create Migration (Have to write sql queries for changes manually)
 
+```bash
 npm run typeorm:cli -- migration:create -n <migration_name>
+```
 
 ## Generate Migration
 
+```bash
 npm run typeorm:cli -- migration:generate -n <migration_name>
+```
 
 ## Revert Migration (Reverts only the last migration. If you need to revert more than one migration, developer need to call revert multiple times)
 
+```bash
 npm run typeorm:cli -- migration:revert
+```
 
 ## Run Migration (Migrations will be executed at the time of starting the service. If the developer wants to run it prior use the following command)
 
+```bash
 npm run typeorm:cli -- migration:run
+```
 
 # Production
 
 ## Build
 
+```bash
 docker-compose build
+```
 
 ## Run
 
+```bash
 docker-compose up
+```
 
 ## Release
 
+```bash
 docker push <image_name>
+```
 
 # Database
 
