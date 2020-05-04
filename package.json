@@ -60,6 +60,7 @@
     "eslint-plugin-security": "^1.4.0",
     "husky": "^4.2.5",
     "jest": "^24.8.0",
+    "jest-sonar-reporter": "^2.0.0",
     "rimraf": "^2.6.3",
     "supertest": "^4.0.2",
     "ts-jest": "^24.0.2",

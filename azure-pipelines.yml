@@ -6,7 +6,7 @@
 trigger:
   branches:
     include:
-      - "*"
+      - '*'
 
 variables:
   # Define variables in Library section under pipelines
@@ -14,11 +14,11 @@ variables:
 
   # name of the service connection
   - name: dockerRegistryServiceConnection
-    value: "linearsquared"
+    value: 'linearsquared'
 
   # container registry endpoint
   - name: acrEndpoint
-    value: "linearsquared.azurecr.io"
+    value: 'linearsquared.azurecr.io'
 
   - name: tag
     # value: '$(Build.BuildId)'
@@ -38,31 +38,31 @@ stages:
         steps:
           - task: NodeTool@0
             inputs:
-              versionSpec: "10.x"
-            displayName: "install node.js"
+              versionSpec: '10.x'
+            displayName: 'install node.js'
 
           - script: |
               npm install
               npm run build
-            displayName: "npm install and build"
+            displayName: 'npm install and build'
 
           - script: |
               npm run lint
-            displayName: "run lint"
+            displayName: 'run lint'
 
           - script: |
               npm run test
-            displayName: "npm run test"
+            displayName: 'npm run test'
 
           - script: |
               npm run test-coverage
-            displayName: "npm test-coverage"
+            displayName: 'npm test-coverage'
 
           - task: SonarQubePrepare@4
             inputs:
-              SonarQube: "Sonar_Connection"
-              scannerMode: "CLI"
-              configMode: "file"
+              SonarQube: 'Sonar_Connection'
+              scannerMode: 'CLI'
+              configMode: 'file'
               extraProperties: |
                 sonar.branch=$(Build.SourceBranch)
 
@@ -74,8 +74,8 @@ stages:
             displayName: Build and push an image to container registry
             inputs:
               command: buildAndPush
-              repository: forecast-api
-              dockerfile: "**/Dockerfile"
+              repository: post-api
+              dockerfile: '**/Dockerfile'
               containerRegistry: $(dockerRegistryServiceConnection)
               tags: $(tag)
 
@@ -84,8 +84,8 @@ stages:
             condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
             displayName: Publish Artifacts
             inputs:
-              artifactName: "manifests"
-              targetPath: "manifests"
+              artifactName: 'manifests'
+              targetPath: 'manifests'
 
   # Deploy Stage
   - stage: DeployDev
@@ -95,7 +95,7 @@ stages:
     variables:
       # Kubernetes Namespace to deploy to. This variable is scoped to the DeployDev stage.
       - name: k8sNamespace
-        value: "dev"
+        value: 'dev'
 
     jobs:
       # Deploy Stage Agent Job
@@ -105,7 +105,7 @@ stages:
         pool:
           vmImage: ubuntu-latest
 
-        environment: "eps-dev.dev" # name of the environment to target [env name.namespace]. This will pull in the Kubernetes service connection automatically
+        environment: 'eps-dev.dev' # name of the environment to target [env name.namespace]. This will pull in the Kubernetes service connection automatically
 
         strategy:
           runOnce:
@@ -115,8 +115,8 @@ stages:
                 - task: DownloadPipelineArtifact@1
                   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
                   inputs:
-                    artifactName: "manifests"
-                    downloadPath: "$(System.ArtifactsDirectory)/manifests"
+                    artifactName: 'manifests'
+                    downloadPath: '$(System.ArtifactsDirectory)/manifests'
 
                 # Deploying to the cluster
                 - task: KubernetesManifest@0
@@ -126,4 +126,4 @@ stages:
                     action: deploy
                     namespace: $(k8sNamespace)
                     manifests: $(System.ArtifactsDirectory)/manifests/*
-                    containers: "$(acrEndpoint)/admin-frontend:$(tag)"
+                    containers: '$(acrEndpoint)/admin-frontend:$(tag)'
